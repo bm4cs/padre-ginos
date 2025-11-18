@@ -49,7 +49,7 @@ export default [
     },
     rules: {
       ...react.configs.recommended.rules,
-      // Turn off rules not needed with React 17+ and TypeScript
+      'react/no-unescaped-entities': 'off',
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off', // TypeScript handles prop types
     },
