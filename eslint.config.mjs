@@ -24,14 +24,28 @@ export default [
   // 3. TypeScript Configuration
   ...tseslint.configs.recommended,
 
-  // 3a. TypeScript Parser Configuration
+  // 3a. TypeScript Parser Configuration for Source Files
   {
-    files: ['**/*.{ts,tsx}'],
+    files: ['src/**/*.{ts,tsx}'],
     languageOptions: {
       parser: tseslint.parser,
       parserOptions: {
         ecmaVersion: 'latest',
         sourceType: 'module',
+        project: './tsconfig.json',
+      },
+    },
+  },
+
+  // 3b. TypeScript Parser Configuration for Config Files
+  {
+    files: ['*.config.ts'],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        project: './tsconfig.node.json',
       },
     },
   },
