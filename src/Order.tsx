@@ -1,9 +1,49 @@
+import { useEffect, useState } from "react";
 import Pizza from "./Pizza";
 
-export default function Order(): JSX.Element {
+const intl = Intl.NumberFormat("en-AU", {
+  style: "currency",
+  currency: "AUD",
+});
 
-  const pizzaType = "pepperoni";
-  const pizzaSize = "M";
+interface PizzaType {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  image: string;
+  sizes: {
+    S: number;
+    M: number;
+    L: number;
+  };
+}
+
+export default function Order(): JSX.Element {
+  const [pizzaList, setPizzaList] = useState<PizzaType[]>([]);
+  const [pizzaType, setPizzaType] = useState("pepperoni");
+  const [pizzaSize, setPizzaSize] = useState("M");
+  const [loading, setLoading] = useState(true);
+
+  let price, selectedPizza;
+
+  if (!loading) {
+    selectedPizza = pizzaList.find((pizza) => pizza.id === pizzaType);
+  }
+
+  async function fetchPizzaTypes() {
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // fake loading delay
+    const pizzasResponse = await fetch("/api/pizzas");
+    const pizzasJson = await pizzasResponse.json();
+    setPizzaList(pizzasJson);
+    setLoading(false);
+  }
+
+  
+
+  useEffect(() => {
+    fetchPizzaTypes();
+  }, []); 
 
   return (
     <div className="order">
@@ -12,10 +52,14 @@ export default function Order(): JSX.Element {
         <div>
           <div>
             <label htmlFor="pizza-type">Pizza Type</label>
-            <select name="pizza-type" value={pizzaType}>
-              <option value="pepperoni">The Pepperoni Pizza</option>
-              <option value="hawaiian">The Hawaiian Pizza</option>
-              <option value="big_meat">The Big Meat Pizza</option>
+            <select name="pizza-type" value={pizzaType} onChange={e => setPizzaType(e.target.value)}>
+              {
+                pizzaList.map((pizza) => (
+                  <option key={pizza.id} value={pizza.id}>
+                    {pizza.name}
+                  </option>
+                ))
+              }
             </select>
           </div>
           <div>
@@ -28,6 +72,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="S"
                   id="pizza-s"
+                  onChange={e => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-s">Small</label>
               </span>
@@ -38,6 +83,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="M"
                   id="pizza-m"
+                  onChange={e => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-m">Medium</label>
               </span>
@@ -48,6 +94,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="L"
                   id="pizza-l"
+                  onChange={e => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-l">Large</label>
               </span>
@@ -56,12 +103,20 @@ export default function Order(): JSX.Element {
           <button type="submit">Add to Cart</button>
         </div>
         <div className="order-pizza">
-          <Pizza
-            name="Pepperoni"
-            description="Mozzarella Cheese, Pepperoni"
-            image="/public/pizzas/pepperoni.webp"
-          />
-          <p>$13.37</p>
+          {selectedPizza ? (
+            <Pizza
+              name={selectedPizza.name}
+              description={selectedPizza.description}
+              image={selectedPizza.image}
+            />
+          ) : (
+            <div>Loading pizza...</div>
+          )}
+          <p>
+            {selectedPizza
+              ? intl.format(selectedPizza.sizes[pizzaSize as keyof typeof selectedPizza.sizes])
+              : "$0.00"}
+          </p>
         </div>
       </form>
     </div>
