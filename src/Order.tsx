@@ -1,31 +1,40 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import Cart from "./Cart";
 import Pizza from "./Pizza";
+import { CartContext } from "./contexts";
+import { CartType, PizzaType } from "./types";
 
 const intl = Intl.NumberFormat("en-AU", {
   style: "currency",
   currency: "AUD",
 });
 
-interface PizzaType {
-  id: string;
-  name: string;
-  description: string;
-  category: string;
-  image: string;
-  sizes: {
-    S: number;
-    M: number;
-    L: number;
-  };
-}
-
 export default function Order(): JSX.Element {
   const [pizzaList, setPizzaList] = useState<PizzaType[]>([]);
   const [pizzaType, setPizzaType] = useState("pepperoni");
   const [pizzaSize, setPizzaSize] = useState("M");
+  // const [cart, setCart] = useState<CartType>([]);
+  const [cart, setCart] = useContext(CartContext);
   const [loading, setLoading] = useState(true);
 
-  let price, selectedPizza;
+  async function checkout() {
+    setLoading(true);
+
+    await fetch("/api/order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cart,
+      }),
+    });
+
+    setCart([]);
+    setLoading(false);
+  }
+
+  let selectedPizza: PizzaType | undefined = undefined;
 
   if (!loading) {
     selectedPizza = pizzaList.find((pizza) => pizza.id === pizzaType);
@@ -39,27 +48,43 @@ export default function Order(): JSX.Element {
     setLoading(false);
   }
 
-  
-
   useEffect(() => {
-    fetchPizzaTypes();
-  }, []); 
+    // ESLint Error
+    // Calling setState synchronously within an effect can trigger cascading renders
+    // This pattern avoids directly calling an async function in the effect body
+    // which satisfies the linter and is the recommended approach
+    (async () => {
+      await fetchPizzaTypes();
+    })();
+  }, []);
 
   return (
     <div className="order">
       <h2>Create Order</h2>
-      <form>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          if (!selectedPizza) return;
+          const price =
+            selectedPizza.sizes[
+              pizzaSize as keyof typeof selectedPizza.sizes
+            ] ?? 0;
+          setCart([...cart, { pizza: selectedPizza, size: pizzaSize, price }]);
+        }}
+      >
         <div>
           <div>
             <label htmlFor="pizza-type">Pizza Type</label>
-            <select name="pizza-type" value={pizzaType} onChange={e => setPizzaType(e.target.value)}>
-              {
-                pizzaList.map((pizza) => (
-                  <option key={pizza.id} value={pizza.id}>
-                    {pizza.name}
-                  </option>
-                ))
-              }
+            <select
+              name="pizza-type"
+              value={pizzaType}
+              onChange={(e) => setPizzaType(e.target.value)}
+            >
+              {pizzaList.map((pizza) => (
+                <option key={pizza.id} value={pizza.id}>
+                  {pizza.name}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -72,7 +97,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="S"
                   id="pizza-s"
-                  onChange={e => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-s">Small</label>
               </span>
@@ -83,7 +108,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="M"
                   id="pizza-m"
-                  onChange={e => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-m">Medium</label>
               </span>
@@ -94,7 +119,7 @@ export default function Order(): JSX.Element {
                   name="pizza-size"
                   value="L"
                   id="pizza-l"
-                  onChange={e => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value)}
                 />
                 <label htmlFor="pizza-l">Large</label>
               </span>
@@ -114,11 +139,23 @@ export default function Order(): JSX.Element {
           )}
           <p>
             {selectedPizza
-              ? intl.format(selectedPizza.sizes[pizzaSize as keyof typeof selectedPizza.sizes])
+              ? intl.format(
+                  selectedPizza.sizes[
+                    pizzaSize as keyof typeof selectedPizza.sizes
+                  ],
+                )
               : "$0.00"}
           </p>
         </div>
       </form>
+      {loading ? (
+        <h2>LOADING …</h2>
+      ) : (
+        <Cart
+          cart={cart}
+          checkout={checkout}
+        />
+      )}
     </div>
   );
 }

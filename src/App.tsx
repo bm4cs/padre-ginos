@@ -1,5 +1,9 @@
+import { StrictMode, useState } from "react";
 import { createRoot } from "react-dom/client";
+import Header from "./Header";
 import Order from "./Order";
+import PizzaOfTheDay from "./PizzaOfTheDay";
+import { CartContext } from "./contexts";
 
 const App = (): JSX.Element => {
   //   var margheritaProps = {
@@ -8,11 +12,18 @@ const App = (): JSX.Element => {
   //       "Delicious classic pizza with tomatoes, mozzarella, and basil.",
   //   };
 
+  const cartHook = useState([]);
+
   return (
-    <div>
-      <h1 className="logo">Padre Gino's Pizza</h1>
-      <Order />
-    </div>
+    <StrictMode>
+      <CartContext.Provider value={cartHook}>
+        <div>
+          <Header />
+          <Order />
+          <PizzaOfTheDay />
+        </div>
+      </CartContext.Provider>
+    </StrictMode>
   );
 };
 
