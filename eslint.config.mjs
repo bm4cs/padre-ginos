@@ -4,8 +4,9 @@ import react from 'eslint-plugin-react';
 import reacthooks from 'eslint-plugin-react-hooks';
 import globals from "globals";
 import prettier from "eslint-config-prettier";
+import pluginQuery from "@tanstack/eslint-plugin-query";
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
+/** @type {import('eslint').Linter.Config[]} */
 export default [
     // 1. Core ESLint Configuration
   {
@@ -81,7 +82,15 @@ export default [
     },
   },
 
-  // 6. Global Environment Setup
+  // 6. TanStack Query Configuration
+  {
+    files: ['**/*.{js,jsx,ts,tsx}'],
+    plugins: {
+      'query': pluginQuery
+    },
+  },
+
+  // 7. Global Environment Setup
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
     languageOptions: {

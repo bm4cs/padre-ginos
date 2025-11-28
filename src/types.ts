@@ -1,6 +1,4 @@
 
-type CartType = CartItemType[];
-
 interface CartItemType {
   pizza: PizzaType;
   size: string;
