@@ -19,4 +19,4 @@ interface PizzaType {
   };
 }
 
-export type { CartType, CartItemType, PizzaType };
+export type { CartItemType, PizzaType };

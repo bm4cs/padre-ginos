@@ -5,10 +5,10 @@ import { ReactQueryDevtools  } from "@tanstack/react-query-devtools";
 import PizzaOfTheDay from "../PizzaOfTheDay";
 import Header from "../Header";
 import { CartContext } from "../contexts";
-import type { CartType } from "../types";
+import type { CartItemType } from "../types";
 
 function RootComponent() {
-  const cartHook = useState<CartType[]>([]);
+  const cartHook = useState<CartItemType[]>([]);
   return (
     <>
       <CartContext.Provider value={cartHook}>
