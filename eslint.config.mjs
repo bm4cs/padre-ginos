@@ -15,6 +15,7 @@ export default [
       'build/',
       'node_modules/',
       '*.config.{js,cjs,mjs}',
+      'routeTree.gen.ts',
     ],
   },
 

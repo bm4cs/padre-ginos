@@ -16,7 +16,7 @@ export default function Cart({
   for (let i = 0; i < cart.length; i++) {
     const current = cart[i];
     if (current) {
-      total += current.pizza.sizes[current.size];
+      total += current.pizza.sizes[current.size as keyof typeof current.pizza.sizes];
     }
   }
   return (

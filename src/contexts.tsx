@@ -7,5 +7,3 @@ type CartContextType = [CartType[], Dispatch<SetStateAction<CartType[]>>];
 const noop = (() => {}) as Dispatch<SetStateAction<CartType[]>>;
 
 export const CartContext = createContext<CartContextType>([[], noop]);
-
-// [never[], React.Dispatch<React.SetStateAction<never[]>>]
