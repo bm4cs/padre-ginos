@@ -26,4 +26,5 @@ function RootComponent() {
 
 export const Route = createRootRoute({
   component: RootComponent,
+  notFoundComponent: () => <div>404 - Page Not Found</div>,
 });

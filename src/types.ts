@@ -19,4 +19,10 @@ interface PizzaType {
   };
 }
 
-export type { CartItemType, PizzaType };
+interface OrderType {
+  order_id: string;
+  date: string;
+  time: string;
+}
+
+export type { CartItemType, PizzaType, OrderType };
