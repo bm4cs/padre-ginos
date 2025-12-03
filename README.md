@@ -22,3 +22,5 @@ git clone https://github.com/bm4cs/padre-ginos.git
 npm install
 npm run dev
 ```
+
+Uses vite's proxy server feature (see `vite.config.ts`) to surface the API on the same origin as the vite local dev server, avoiding CORS hell.

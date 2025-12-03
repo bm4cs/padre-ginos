@@ -32,7 +32,7 @@ function RouteComponent() {
           </tr>
         </thead>
         <tbody>
-          {data.map((order) => (
+          {data?.map((order) => (
             <tr key={order.order_id}>
               <td>{order.order_id}</td>
               <td>{order.date}</td>
@@ -46,7 +46,7 @@ function RouteComponent() {
           Previous
         </button>
         <div>{page}</div>
-        <button disabled={data.length < 10} onClick={() => setPage(page + 1)}>
+        <button disabled={(data?.length ?? 0) < 10} onClick={() => setPage(page + 1)}>
           Next
         </button>
       </div>
